@@ -21,9 +21,12 @@ func main() {
 		}(&y)
 
 		/*
+		  Raca condition is when multiple threads are trying to access and manipulat the same variable.
+		  the code below are all accessing and changing the value.
 		  Divide x (60) by y (3) and assign to z (42)...
 		  Except if y is not assigned 3 before x is assigned 60,
 		  y's initialized value of 0 is used,
+		  Due to the uncertainty of Goroutine scheduling mechanism, the results of the following program is unpredictable,
 		  which causes divide by zero exception.
 		*/
 		go func(v1 int, v2 int) {
