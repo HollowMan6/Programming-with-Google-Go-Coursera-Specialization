@@ -1,65 +1,99 @@
 package main
 
 import (
-	"fmt"
-	"sync"
+  "fmt"
+  "os"
+  "bufio"
+  "strings"
+  "strconv"
+  "sort"
+  "sync"
 )
 
-func QuickSort(data []int) []int {
-    if len(data) <= 1 {
-        return data
-    }
-    var wg sync.WaitGroup
-    c := data[0]
-    var s1, s2 []int
-
-    for k, v := range data {
-        if k == 0 {
-            continue
-        }
-        if c < v {
-            s2 = append(s2, v)
-        } else {
-            s1 = append(s1, v)
-        }
-    }
-
-    wg.Add(2)
-    go func() {
-        s1 = QuickSort(s1)
-        wg.Done()
-    }()
-    go func() {
-        s2 = QuickSort(s2)
-        wg.Done()
-    }()
-    wg.Wait()
-
-    data = []int{c}
-    if len(s1) > 0 {
-        data = append(s1, data...)
-    }
-    if len(s2) > 0 {
-        data = append(data, s2...)
-    }
-    return data
+func sub_sort(wg *sync.WaitGroup, is []int) {
+  fmt.Println(is)
+  sort.Ints(is)
+  wg.Done()
 }
 
 func main() {
-    var values []int
-    fmt.Println("Please input 8 numbers:")
-    for i:=0;i<8;i++{
-        in:=0
-        fmt.Scanln(&in)
-        values=append(values,in)
-	}
-	data1:=values[0:len(values)/4]
-	data2:=values[len(values)/4:len(values)/2]
-	data3:=values[len(values)/2:len(values)/4*3]
-	data4:=values[len(values)/4*3:len(values)]
-	fmt.Println(QuickSort(data1))
-	fmt.Println(QuickSort(data2))
-	fmt.Println(QuickSort(data3))
-	fmt.Println(QuickSort(data4))
-	fmt.Println(QuickSort(values))
+  fmt.Println("Please input some integers to sort: ")
+  br := bufio.NewReader(os.Stdin)
+  a, _, _ := br.ReadLine()
+  ns := strings.Split(string(a), " ")
+  var numbers []int
+  for _, s := range(ns) {
+    n, _ := strconv.Atoi(s)
+    numbers = append(numbers, n)
+  }
+  size := len(numbers) / 4
+  var wg sync.WaitGroup
+  for c := 0; c < 4; c++ {
+    wg.Add(1)
+    if c != 3 {
+      go sub_sort(&wg, numbers[c*size: (c+1)*size])
+    } else {
+      go sub_sort(&wg, numbers[c*size:])
+    }
+  }
+  wg.Wait()
+
+  var sorted []int
+  c1 := numbers[: 1*size]
+  c2 := numbers[1*size : 2*size]
+  c3 := numbers[2*size : 3*size]
+  c4 := numbers[3*size :]
+  for k := 0; k < len(numbers); k++ {
+    i := 0
+    j := 0
+    if len(c1) !=  0 {
+      i = c1[0]
+      j = 1
+    }
+    if len(c2) != 0 {
+      if j == 0 {
+        i = c2[0]
+        j = 2
+      } else {
+        if c2[0] < i {
+          i = c2[0]
+          j = 2
+          }
+      }
+    }
+    if len(c3) != 0 {
+      if j == 0 {
+        i = c3[0]
+        j = 3
+      } else {
+        if c3[0] < i {
+          i = c3[0]
+          j = 3
+          }
+      }
+    }
+    if len(c4) != 0 {
+      if j == 0 {
+        i = c4[0]
+        j = 4
+      } else {
+        if c4[0] < i {
+          i = c4[0]
+          j = 4
+          }
+      }
+    }
+    sorted = append(sorted, i)
+    switch j {
+    case 1:
+      c1 = c1[1 :]
+    case 2:
+      c2 = c2[1 :]
+    case 3:
+      c3 = c3[1 :]
+    case 4:
+      c4 = c4[1 :]
+    }
+  }
+  fmt.Println(sorted)
 }
