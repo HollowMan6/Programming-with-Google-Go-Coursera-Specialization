@@ -13,10 +13,7 @@ type Name struct {
 }
 func main() {
     path:=""
-    fmt.Println("Please input file full Path(Such as C:\\Windows\\win.ini):")
-    /*
-        PS: You must have an enter typed at the end of you file!
-    */
+    fmt.Println("Please input file full Path(Such as D:\\name.txt):")
     fmt.Scanln(&path)
     var name[] Name
     f, err := os.Open(path)
@@ -27,15 +24,15 @@ func main() {
 
     rd := bufio.NewReader(f)
     for {
-        line, err := rd.ReadString('\n')
+        line, _, err:= rd.ReadLine()
         
         if err != nil || io.EOF == err {
             break
         }       
-            tname:=strings.Split(line," ")
+            tname:=strings.Split(string(line)," ")
             tpname:= Name {
-                tname[0],
-                tname[1],
+                fixLongName(tname[0]),
+                fixLongName(tname[1]),
             } 
             name=append(name,tpname)
             }  
@@ -43,5 +40,14 @@ func main() {
         fmt.Println(i+1)
         fmt.Println("First Name:"+name[i].fname)
         fmt.Println("Last Name:"+name[i].lname)
+    }
+}
+// Cut the string if the name is too long
+func fixLongName(buffer string) string {
+
+    if len(buffer)>20 {
+       return string(buffer[0:20])
+    } else {
+       return buffer 
     }
 }
