@@ -14,6 +14,9 @@ type Name struct {
 func main() {
     path:=""
     fmt.Println("Please input file full Path(Such as C:\\Windows\\win.ini):")
+    /*
+        PS: You must have an enter typed at the end of you file!
+    */
     fmt.Scanln(&path)
     var name[] Name
     f, err := os.Open(path)

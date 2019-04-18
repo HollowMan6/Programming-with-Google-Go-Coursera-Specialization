@@ -1,14 +1,22 @@
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "os"
+    "bufio"
+    "strings"
+    "strconv"
+)
 
 func main() {
+    fmt.Println("Please input numbers(separate with space):")
+    br := bufio.NewReader(os.Stdin)
+    a, _, _ := br.ReadLine()
+    ns := strings.Split(string(a), " ")
     var values []int
-    fmt.Println("Please input 10 numbers:")
-    for i:=0;i<10;i++{
-        in:=0
-        fmt.Scanln(&in)
-        values=append(values,in)
+    for _, s := range(ns) {
+      n, _ := strconv.Atoi(s)
+      values = append(values, n)
     }
     BubbleSort(values)
     fmt.Println(values)

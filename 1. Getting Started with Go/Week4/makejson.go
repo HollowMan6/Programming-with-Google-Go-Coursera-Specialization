@@ -3,17 +3,22 @@ package main
 import (
     "fmt"
     "encoding/json"
+    "os"
+    "bufio"
 )
 
 func main() {
     var m map[string]string
     m = make(map[string]string)
-    var name,adress string
     fmt.Println("Please input your name:")
-    fmt.Scanln(&name)
+    br := bufio.NewReader(os.Stdin)
+    bname, _, _ := br.ReadLine()
+    name:=string(bname)
     m["name"]=name
     fmt.Println("Then input your adress:")
-    fmt.Scanln(&adress)
+    br1 := bufio.NewReader(os.Stdin)
+    badress, _, _ := br1.ReadLine()
+    adress:=string(badress)
     m["adress"]=adress
     b, err := json.Marshal(m)
     if err != nil {
