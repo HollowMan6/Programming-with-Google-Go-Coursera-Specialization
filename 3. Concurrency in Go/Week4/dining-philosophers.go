@@ -2,113 +2,66 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
+	"sync"
+    "time"
 )
-
-type Philosopher struct {
-	name      string
-	chopstick chan bool
-	neighbor  *Philosopher
-	leftHand  bool
-	rightHand bool
+type ChopS struct {
+	sync.Mutex
+}
+type Philos struct {
+	num, count int
+	leftcs,rightcs *ChopS
 }
 
-func NewPhilosopher(name string) *Philosopher {
-	p := &Philosopher{
-		name:      name,
-		chopstick: make(chan bool, 1),
-		leftHand:  false,
-		rightHand: false,
+func (p Philos) eat(c chan *Philos, wg *sync.WaitGroup) {
+	for i:=0;i<3;i++ {
+			c <- &p
+			if (p.count < 3) {
+			p.leftcs.Lock()
+			p.rightcs.Lock()
+
+			fmt.Println("starting to eat ",p.num)
+			p.count = p.count + 1
+			fmt.Println("finishing eating",p.num)
+			p.rightcs.Unlock()
+			p.leftcs.Unlock()
+			wg.Done()		
+			}
+
 	}
-	p.chopstick <- true
-	return p
 }
 
-func (p *Philosopher) Thinking() {
-	time.Sleep(time.Second * 1)
-}
-
-func (p *Philosopher) GetChopsticks() {
+func host(c chan *Philos, wg *sync.WaitGroup) {
 	for {
-		if p.leftHand && p.rightHand {
-			return
-		}
-
-		select {
-		case <-p.chopstick:
-			fmt.Printf("%v starting to eat.\n", p.name)
-			p.leftHand = true
-		case <-p.neighbor.chopstick:
-			p.rightHand = true
-		case <-time.After(time.Second * 2):
-			if p.leftHand {
-				p.chopstick <- true
-				p.leftHand = false
-			}
-			if p.rightHand {
-				p.neighbor.chopstick <- true
-				p.rightHand = false
-			}
-
-			// No chopstick for me, try to figuring out the reason
-			p.Thinking()
+		if  (len(c)==2) {
+		<- c
+		<- c
+		//time delay
+		time.Sleep(20 * time.Millisecond)
 		}
 	}
-}
-
-func (p *Philosopher) Dining() {
-	time.Sleep(time.Second * time.Duration(rand.Int63n(10)))
-}
-
-func (p *Philosopher) ReturnChopsticks() {
-	p.chopstick <- true
-	p.neighbor.chopstick <- true
-	p.leftHand, p.rightHand = false, false
-}
-
-func (p *Philosopher) Dine(announce chan *Philosopher) {
-	p.Thinking()
-	p.GetChopsticks()
-	p.Dining()
-	p.ReturnChopsticks()
-	announce <- p
 }
 
 func main() {
-	// Define a bunch of Philosophers
-	philosophers := []*Philosopher{
-		NewPhilosopher("1"),
-		NewPhilosopher("2"),
-		NewPhilosopher("3"),
-		NewPhilosopher("4"),
-		NewPhilosopher("5"),
+	var i int
+	var wg sync.WaitGroup
+	c := make(chan *Philos,2)
+
+	wg.Add(15)
+
+	ChopSticks := make([] *ChopS,5)
+	for i=0;i<5;i++ {
+		ChopSticks[i] = new(ChopS)
 	}
 
-	// Initialize Philosophers' neighbors and let them pick their own chopsticks
-	i := 0
-	for ; i < len(philosophers)-1; i++ {
-		philosophers[i].neighbor = philosophers[i+1]
-	}
-	philosophers[i].neighbor = philosophers[0]
-
-	// Let Philosophers start to dine
-	announce := make(chan *Philosopher)
-	defer close(announce)
-	for _, p := range philosophers {
-		go p.Dine(announce)
+	Philosophers := make([] *Philos,5)
+	for i=0;i<5;i++ {
+		Philosophers[i] = &Philos{i+1,0,ChopSticks[i],ChopSticks[(i+1)%5]}
 	}
 
-	// Loop until all Philosophers finish dining
-	count := 0
-	for {
-		if count == len(philosophers) {
-			break
-		}
-		select {
-		case p := <-announce:
-			fmt.Printf("finishing eating %v \n", p.name)
-			count += 1
-		}
+	go host(c,&wg)
+	for i=0;i<5;i++ {
+		go Philosophers[i].eat(c,&wg)
 	}
+	wg.Wait()
 }
