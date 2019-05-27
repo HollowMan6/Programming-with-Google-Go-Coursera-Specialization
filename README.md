@@ -1,4 +1,8 @@
 # Programming with Google Go Coursera Specialization
+
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](https://opensource.org/licenses/GPL-3.0/)
+
 Quiz &amp; Assignment of Coursera Specialization [Programming with Google Go](https://www.coursera.org/specializations/google-golang)
 
 This repository is aimed to help Coursera learners who have difficulties in their learning process.  
