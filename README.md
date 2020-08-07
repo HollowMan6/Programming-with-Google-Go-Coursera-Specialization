@@ -47,7 +47,7 @@ The quiz and programming homework is belong to coursera.
   * [Week3](./2.%20Functions,%20Methods,%20and%20Interfaces%20in%20Go/Week3)
   * [Week4](./2.%20Functions,%20Methods,%20and%20Interfaces%20in%20Go/Week4)
 
-* [Getting Started with Go](./3.%20Concurrency%20in%20Go)
+* [Concurrency in Go](./3.%20Concurrency%20in%20Go)
   * [Week1](./3.%20Concurrency%20in%20Go/Week1)
   * [Week2](./3.%20Concurrency%20in%20Go/Week2)
   * [Week3](./3.%20Concurrency%20in%20Go/Week3)
